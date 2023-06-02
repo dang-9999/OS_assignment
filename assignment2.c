@@ -7,6 +7,7 @@
 #define DATA_COUNT 1000
 #define NUM_PRODUCERS 5
 #define NUM_CONSUMERS 5
+#define _BSD_SOURCE
 
 int buffer[BUFFER_SIZE];
 int counter = 0;
