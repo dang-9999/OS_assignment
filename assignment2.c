@@ -93,5 +93,14 @@ int main() {
 
     // Wait for consumer threads to finish
     for (i = 0; i < NUM_CONSUMERS; i++)
+    pthread_join(consumers[i], NULL);
+
+    // Clean up resources
+    sem_destroy(&empty_slots);
+    sem_destroy(&filled_slots);
+    pthread_mutex_destroy(&mutex);
+
+    return 0;
 }
+
        
