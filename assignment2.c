@@ -3,8 +3,12 @@
 #include <pthread.h>
 #include <semaphore.h>
 
+// Circular buffe는 하나로 하고, 버퍼크기는 32 이하로 하고, 
 #define BUFFER_SIZE 32
+// 1,000개 이상의 데이터(숫자 등)를 생성 및 소비시킬 것
 #define DATA_COUNT 1000
+
+// Producer 쓰레드와 consumer 쓰레드를 각각 5개 이상 동시에 수행시킬것.
 #define NUM_PRODUCERS 5
 #define NUM_CONSUMERS 5
 #define _BSD_SOURCE
@@ -18,52 +22,66 @@ sem_t empty_slots;
 sem_t filled_slots;
 pthread_mutex_t mutex;
 
-void *producer(void *param) {
+void producer(void *param) {
     int i;
     int data;
 
     for (i = 0; i < DATA_COUNT; i++) {
-        data = rand() % 1000;  // Generate random data
+        // 랜덤으로 수를 발생시킵니다. 
+        data = rand() % 1000;  
 
-        sem_wait(&empty_slots);  // Wait for an empty slot in the buffer
+        // 버퍼 안이 비게 된다면 기다립니다.
+        sem_wait(&empty_slots);
+
+        // mutex를 이용해 lock 합니다. 
         pthread_mutex_lock(&mutex);  // Acquire the mutex lock
 
-        // Add data to the buffer
+        // 버퍼에 데이터를 생성합니다. 
         buffer[in] = data;
         in = (in + 1) % BUFFER_SIZE;
         counter++;
 
-        printf("Produced: %d\n", data);
+        printf("Produced: %d , counter:%d\n", data, counter);
 
-        pthread_mutex_unlock(&mutex);  // Release the mutex lock
+        // 락을 해제 합니다. 
+        pthread_mutex_unlock(&mutex); 
+
+        // 세마포어로 버퍼 안에 새로운 값이 생겼음을 소비자에게 알려줍니다. 
         sem_post(&filled_slots);  // Signal that a slot has been filled
 
-        // Sleep for a random period of time
+        //sleep
         usleep(rand() % 1000000);
     }
 
     pthread_exit(0);
 }
 
-void *consumer(void *param) {
+void consumer(void *param) {
     int i;
     int data;
 
     for (i = 0; i < DATA_COUNT; i++) {
-        sem_wait(&filled_slots);  // Wait for a filled slot in the buffer
-        pthread_mutex_lock(&mutex);  // Acquire the mutex lock
 
-        // Remove data from the buffer
+        // 버퍼 안이 꽉차면 기다립니다.
+        sem_wait(&filled_slots); 
+
+        // mutex를 이용해 lock 합니다.
+        pthread_mutex_lock(&mutex); 
+
+        // 버퍼 안의 데이터를 소비합니다. 
         data = buffer[out];
         out = (out + 1) % BUFFER_SIZE;
         counter--;
 
-        printf("Consumed: %d\n", data);
+        printf("Consumed: %d, Counter: %d\n", data, counter);
 
-        pthread_mutex_unlock(&mutex);  // Release the mutex lock
+        // lock을 해제합니다.
+        pthread_mutex_unlock(&mutex); 
+
+        // 소비한 후 버퍼가 비었다면 반대쪽 생성자에 신호를 보내줍니다. 
         sem_post(&empty_slots);  // Signal that a slot has been emptied
 
-        // Sleep for a random period of time
+        // Sleep
         usleep(rand() % 1000000);
     }
 
