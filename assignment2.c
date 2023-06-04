@@ -6,7 +6,7 @@
 // Circular buffe는 하나로 하고, 버퍼크기는 32 이하로 하고, 
 #define BUFFER_SIZE 32
 // 1,000개 이상의 데이터(숫자 등)를 생성 및 소비시킬 것
-#define DATA_COUNT 1000
+#define DATA_COUNT 1010
 
 // Producer 쓰레드와 consumer 쓰레드를 각각 5개 이상 동시에 수행시킬것.
 #define NUM_PRODUCERS 5
