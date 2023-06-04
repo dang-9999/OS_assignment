@@ -41,9 +41,11 @@ void producer(void *param) {
         in = (in + 1) % BUFFER_SIZE;
         counter++;
 
+        // 프린트
+        if ((i % 100 == 0) & (i > 10)){printf("***** %d 번째 Produced *****\n",i);}
         printf("Produced: %d , counter:%d\n", data, counter);
 
-        if (i % 100 == 0){printf("***** %d 번째 Produced *****\n",i);}
+        
 
         // 락을 해제 합니다. 
         pthread_mutex_unlock(&mutex); 
@@ -75,9 +77,11 @@ void consumer(void *param) {
         out = (out + 1) % BUFFER_SIZE;
         counter--;
 
+        //프린트
+        if ((i % 100 == 0) & (i > 10)){printf("***** %d 번째 Consumed *****\n",i);}
         printf("Consumed: %d, Counter: %d\n", data, counter);
 
-        if (i % 100 == 0){printf("***** %d 번째 Consumed *****\n",i);}
+        
 
         // lock을 해제합니다.
         pthread_mutex_unlock(&mutex); 
