@@ -43,6 +43,8 @@ void producer(void *param) {
 
         printf("Produced: %d , counter:%d\n", data, counter);
 
+        if (i % 100 == 0){printf("***** %d 번째 Produced *****",i);}
+
         // 락을 해제 합니다. 
         pthread_mutex_unlock(&mutex); 
 
@@ -74,6 +76,8 @@ void consumer(void *param) {
         counter--;
 
         printf("Consumed: %d, Counter: %d\n", data, counter);
+
+        if (i % 100 == 0){printf("***** %d 번째 Consumed *****",i);}
 
         // lock을 해제합니다.
         pthread_mutex_unlock(&mutex); 
